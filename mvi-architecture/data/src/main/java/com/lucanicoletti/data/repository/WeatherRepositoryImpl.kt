@@ -15,12 +15,12 @@ class WeatherRepositoryImpl @Inject constructor(
 }
 
 private fun CurrentWeather.mapToDomain(): WeatherModel = WeatherModel(
-    this.temperature,
-    this.windSpeed,
-    this.weatherCode,
-    weatherCodeInterpretation(this.windDirection ?: -1),
-    this.isDay,
-    this.time,
+    temperature = this.temperature,
+    windSpeed = this.windSpeed,
+    windDirection = this.windDirection,
+    weatherDescription = weatherCodeInterpretation(this.weatherCode ?: -1),
+    isDay = this.isDay,
+    time = this.time,
 )
 
 private fun weatherCodeInterpretation(code: Int): String =
