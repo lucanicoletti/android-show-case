@@ -1,24 +1,48 @@
 package com.lucanicoletti.androidshowcase
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lucanicoletti.androidshowcase.base.BaseViewModel
 import com.lucanicoletti.data.GetCurrentWeatherConditionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getCurrentWeatherConditionUseCase: GetCurrentWeatherConditionUseCase
-) : ViewModel() {
+) : BaseViewModel<MainViewState, MainIntention>(MainViewState.Loading) {
 
-    val viewState: MutableStateFlow<String> = MutableStateFlow("")
-
-    init {
+    private fun fetchCurrentWeather() {
         viewModelScope.launch {
-            val result = getCurrentWeatherConditionUseCase(0f, 0f)
-            viewState.value = result?.weatherDescription.orEmpty()
+            try {
+                val result = getCurrentWeatherConditionUseCase(0f, 0f)
+                result?.let { it ->
+                    _viewState.value = MainViewState.Success(
+                        temperature = it.temperature,
+                        windSpeed = it.windSpeed,
+                        windDirection = it.windDirection,
+                        weatherDescription = it.weatherDescription
+                    )
+                } ?: run {
+                    postError()
+                }
+            } catch (e: Exception) {
+                postError()
+            }
+        }
+    }
+
+    private fun postError() {
+        _viewState.value = MainViewState.Error(
+            message = "Failed loading current weather",
+            intention = MainIntention.Retry
+        )
+    }
+
+    override fun handleIntention(intention: MainIntention) {
+        when (intention) {
+            MainIntention.ScreenStarted,
+            MainIntention.Retry -> fetchCurrentWeather()
         }
     }
 
