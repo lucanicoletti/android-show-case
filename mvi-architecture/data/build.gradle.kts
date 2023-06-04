@@ -9,4 +9,11 @@ dependencies {
     api(libs.gson)
     api(project(":domain"))
     implementation(libs.javax.inject)
+
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    tasks.test {
+        useJUnitPlatform()
+    }
 }

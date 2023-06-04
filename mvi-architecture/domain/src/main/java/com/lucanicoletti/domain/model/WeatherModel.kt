@@ -1,6 +1,6 @@
 package com.lucanicoletti.domain.model
 
-class WeatherModel(
+data class WeatherModel(
     val temperature: Double,
     val windSpeed: Double,
     val windDirection: Int,
