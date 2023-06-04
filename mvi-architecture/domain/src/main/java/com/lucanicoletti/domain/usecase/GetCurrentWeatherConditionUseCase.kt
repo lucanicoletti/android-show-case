@@ -1,4 +1,4 @@
-package com.lucanicoletti.data
+package com.lucanicoletti.domain.usecase
 
 import com.lucanicoletti.domain.repository.WeatherRepository
 import javax.inject.Inject

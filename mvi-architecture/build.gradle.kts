@@ -7,3 +7,12 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 true // Needed to make the Suppress annotation work for the plugins block
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
+    }
+}
