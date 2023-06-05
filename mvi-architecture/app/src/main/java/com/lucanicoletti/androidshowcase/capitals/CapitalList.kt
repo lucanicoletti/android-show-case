@@ -19,26 +19,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lucanicoletti.androidshowcase.base.CapitalSearchTopAppBar
 import com.lucanicoletti.androidshowcase.base.ErrorView
 import com.lucanicoletti.androidshowcase.base.LoadingView
 import com.lucanicoletti.androidshowcase.base.ObserverLifecycleEvents
 import com.lucanicoletti.androidshowcase.base.WeatherTopAppBar
 import com.lucanicoletti.domain.model.Capital
+import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CapitalList(
     viewModel: CapitalsViewModel,
-    onCapitalClicked: (Capital) -> Unit
+    onNavigateToCurrentWeather: (Capital) -> Unit
 ) {
 
     val viewState = viewModel.viewState.collectAsStateWithLifecycle().value
 
+
+    LaunchedEffect(0) {
+        viewModel.viewActions.collectLatest {
+            it?.let { viewAction ->
+                when (viewAction) {
+                    is CapitalsViewAction.NavigateToCurrentWeather ->
+                        onNavigateToCurrentWeather(viewAction.capital)
+                }
+            }
+        }
+    }
 
     ObserverLifecycleEvents(
         onStart = {
@@ -48,7 +61,9 @@ fun CapitalList(
 
     Scaffold(
         topBar = {
-            WeatherTopAppBar(title = "Capitals")
+            CapitalSearchTopAppBar {
+                viewModel.submitIntention(CapitalsIntention.Searched(it))
+            }
         }
     ) { innerPadding ->
         when (viewState) {
@@ -57,8 +72,9 @@ fun CapitalList(
             is CapitalsViewState.CapitalsList -> CapitalsListView(
                 Modifier.padding(innerPadding),
                 viewState.list,
-                onCapitalClicked
-            )
+            ) { capital ->
+                viewModel.submitIntention(CapitalsIntention.CapitalClicked(capital = capital))
+            }
         }
     }
 }

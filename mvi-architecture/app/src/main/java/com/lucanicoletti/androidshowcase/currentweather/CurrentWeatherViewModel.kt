@@ -10,18 +10,22 @@ import javax.inject.Inject
 @HiltViewModel
 class CurrentWeatherViewModel @Inject constructor(
     private val getCurrentWeatherConditionUseCase: GetCurrentWeatherConditionUseCase
-) : BaseViewModel<CurrentWeatherViewState, CurrentWeatherIntention>(CurrentWeatherViewState.Loading) {
+) : BaseViewModel<CurrentWeatherViewState, CurrentWeatherIntention, CurrentWeatherViewAction>(
+    CurrentWeatherViewState.Loading
+) {
 
     private fun fetchCurrentWeather(lat: Float, lng: Float) {
         viewModelScope.launch {
             try {
                 val result = getCurrentWeatherConditionUseCase(lat, lng)
                 result?.let {
-                    _viewState.value = CurrentWeatherViewState.Success(
-                        temperature = it.temperature,
-                        windSpeed = it.windSpeed,
-                        windDirection = it.windDirection,
-                        weatherDescription = it.weatherDescription
+                    updateState(
+                        CurrentWeatherViewState.Success(
+                            temperature = it.temperature,
+                            windSpeed = it.windSpeed,
+                            windDirection = it.windDirection,
+                            weatherDescription = it.weatherDescription
+                        )
                     )
                 } ?: run {
                     postError(lat, lng)
@@ -33,15 +37,21 @@ class CurrentWeatherViewModel @Inject constructor(
     }
 
     private fun postError(lat: Float, lng: Float) {
-        _viewState.value = CurrentWeatherViewState.Error(
-            message = "Failed loading current weather",
-            intention = CurrentWeatherIntention.Retry(lat, lng)
+        updateState(
+            CurrentWeatherViewState.Error(
+                message = "Failed loading current weather",
+                intention = CurrentWeatherIntention.Retry(lat, lng)
+            )
         )
     }
 
     override fun handleIntention(intention: CurrentWeatherIntention) {
         when (intention) {
-            is CurrentWeatherIntention.ScreenStarted -> fetchCurrentWeather(intention.lat, intention.lng)
+            is CurrentWeatherIntention.ScreenStarted -> fetchCurrentWeather(
+                intention.lat,
+                intention.lng
+            )
+
             is CurrentWeatherIntention.Retry -> fetchCurrentWeather(intention.lat, intention.lng)
         }
     }

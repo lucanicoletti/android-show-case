@@ -2,20 +2,39 @@ package com.lucanicoletti.androidshowcase.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<ViewState, Intention>(initialState: ViewState) : ViewModel() {
+abstract class BaseViewModel<ViewState, Intention, ViewAction>(initialState: ViewState) :
+    ViewModel() {
 
-    internal val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(initialState)
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(initialState)
     val viewState: StateFlow<ViewState>
         get() = _viewState
 
-    internal val _intentions: MutableStateFlow<Intention?> = MutableStateFlow(null)
+    private val _viewActions = Channel<ViewAction>(Channel.BUFFERED)
+    val viewActions
+        get() = _viewActions.receiveAsFlow()
+
+    private val _intentions = Channel<Intention>(Channel.BUFFERED)
     fun submitIntention(intention: Intention) {
         viewModelScope.launch {
-            _intentions.emit(intention)
+            _intentions.send(intention)
+        }
+    }
+
+    fun updateState(newValue: ViewState) {
+        viewModelScope.launch {
+            _viewState.emit(newValue)
+        }
+    }
+
+    fun sendViewAction(viewAction: ViewAction) {
+        viewModelScope.launch {
+            _viewActions.send(viewAction)
         }
     }
 
