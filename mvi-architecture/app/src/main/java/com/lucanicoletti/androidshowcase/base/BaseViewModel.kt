@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -40,7 +43,7 @@ abstract class BaseViewModel<ViewState, Intention, ViewAction>(initialState: Vie
 
     init {
         viewModelScope.launch {
-            _intentions.collect { intention ->
+            _intentions.consumeAsFlow().collectLatest { intention ->
                 intention?.let {
                     handleIntention(it)
                 }
