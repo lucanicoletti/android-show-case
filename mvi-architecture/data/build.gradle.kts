@@ -13,6 +13,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit.jupiter.params)
     tasks.test {
         useJUnitPlatform()
     }
