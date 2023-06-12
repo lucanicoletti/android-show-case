@@ -10,6 +10,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
@@ -56,5 +58,38 @@ class CardsRepositoryImplTest {
 
             // THEN
             assertEquals(/* expected = */ expectedResult, /* actual = */ result)
+        }
+    @Test
+    fun `GIVEN incorrect value WHEN receiving a card entity THEN exception is thrown`() =
+        runTest {
+            // GIVEN
+            val expectedMessage = "unrecognised value for card received"
+
+            coEvery {
+                cardsApi.getAllCards()
+            } returns listOf(CardEntity("not_valid", "diamonds"))
+
+            // WHEN
+            val result = assertThrows<TypeCastException> { cardsRepository.getAllCards().first() }
+
+            // THEN
+            assertEquals(expectedMessage, result.message)
+        }
+
+    @Test
+    fun `GIVEN incorrect suit WHEN receiving a card entity THEN exception is thrown`() =
+        runTest {
+            // GIVEN
+            val expectedMessage = "unrecognised suit for card received"
+
+            coEvery {
+                cardsApi.getAllCards()
+            } returns listOf(CardEntity("A", "not_valid"))
+
+            // WHEN
+            val result = assertThrows<TypeCastException> { cardsRepository.getAllCards().first() }
+
+            // THEN
+            assertEquals(expectedMessage, result.message)
         }
 }
