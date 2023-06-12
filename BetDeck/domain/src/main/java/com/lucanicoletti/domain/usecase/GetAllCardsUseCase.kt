@@ -7,5 +7,5 @@ class GetAllCardsUseCase @Inject constructor(
     private val repository: CardsRepository,
 ) {
 
-    suspend operator fun invoke() = repository.getAllCards()
+    suspend operator fun invoke() = repository.getAllCards().shuffled()
 }
