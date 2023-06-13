@@ -1,13 +1,15 @@
 [versions]
 agp = "8.2.0-alpha06"
+android-junit5 = "1.8.2.1"
 coil-compose = "2.4.0"
 gson = "2.10"
 hilt-android = "2.44"
 hilt-navigation-compose = "1.0.0"
 hilt-navigation-fragment = "1.0.0"
 javax-inject = "1"
-junit-jupiter = "5.8.1"
+junit-jupiter = "5.9.2"
 junit-jupiter-params = "5.9.2"
+junit-vintage-engine = "5.9.1"
 kotlin = "1.8.10"
 core-ktx = "1.10.1"
 junit = "4.13.2"
@@ -25,6 +27,7 @@ retrofit = "2.9.0"
 navigation-runtime-ktx = "2.5.3"
 
 [libraries]
+android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", version.ref = "android-junit5" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 androidx-hilt-navigation-fragment = { module = "androidx.hilt:hilt-navigation-fragment", version.ref = "hilt-navigation-fragment" }
 androidx-lifecycle-compiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecycle-runtime-ktx" }
@@ -45,7 +48,9 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-params" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter-params" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit-vintage-engine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }

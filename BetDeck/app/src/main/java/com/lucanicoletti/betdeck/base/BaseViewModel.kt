@@ -3,6 +3,7 @@ package com.lucanicoletti.betdeck.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,25 +25,25 @@ abstract class BaseViewModel<ViewState, Intention, ViewAction>(initialState: Vie
 
     private val _intentions = Channel<Intention>(Channel.BUFFERED)
     fun submitIntention(intention: Intention) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _intentions.send(intention)
         }
     }
 
     fun updateState(body: ((ViewState) -> ViewState)) {
-        viewModelScope.launch {
+        viewModelScope.launch() {
             _viewState.emit(body(_viewState.value))
         }
     }
 
     fun sendViewAction(viewAction: ViewAction) {
-        viewModelScope.launch {
+        viewModelScope.launch() {
             _viewActions.send(viewAction)
         }
     }
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _intentions.consumeAsFlow().collectLatest { intention ->
                 intention?.let {
                     handleIntention(it)
