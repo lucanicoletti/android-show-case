@@ -30,6 +30,10 @@ import com.lucanicoletti.betdeck.game.data.CARD_BACK_IMAGE_URL
 import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_BASE_URL
 import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_EXTENSION
 import com.lucanicoletti.betdeck.game.data.Card
+import com.lucanicoletti.betdeck.game.ui.GameOverView
+import com.lucanicoletti.betdeck.game.ui.LoadingView
+import com.lucanicoletti.betdeck.game.ui.NewGameView
+import com.lucanicoletti.betdeck.game.ui.PlayingView
 import com.lucanicoletti.domain.model.CardModel
 import com.lucanicoletti.domain.model.CardValue
 import com.lucanicoletti.domain.model.Suit
@@ -51,11 +55,11 @@ fun GameScreen(viewModel: GameViewModel) {
             contentAlignment = Alignment.Center,
         ) {
             when (viewState) {
-                GameViewState.NewScreen -> NewScreen {
+                GameViewState.NewScreen -> NewGameView {
                     viewModel.submitIntention(GameIntention.StartNewGame)
                 }
 
-                is GameViewState.CurrentlyPlaying -> PlayingScreen(
+                is GameViewState.CurrentlyPlaying -> PlayingView(
                     viewState = viewState,
                     betOnHigherClicked = {
                         viewModel.submitIntention(GameIntention.Bet(BetValue.Higher))
@@ -65,145 +69,14 @@ fun GameScreen(viewModel: GameViewModel) {
                     }
                 )
 
-                is GameViewState.GameOver -> GameOverScreen(
+                is GameViewState.GameOver -> GameOverView(
                     viewState.score
                 ) {
                     viewModel.submitIntention(GameIntention.StartNewGame)
                 }
 
-                GameViewState.Loading -> LoadingScreen()
+                GameViewState.Loading -> LoadingView()
             }
         }
     }
 }
-
-@Composable
-fun LoadingScreen() {
-    CircularProgressIndicator()
-}
-
-@Composable
-fun GameOverScreen(score: Int, onStartOverClicked: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(
-            text = "You lost!",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error
-        )
-
-        Text(
-            text = "You guessed correctly $score times! Nice job",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Button(onClick = onStartOverClicked) {
-            Text(text = "Try again")
-        }
-    }
-}
-
-@Composable
-fun PlayingScreen(
-    viewState: GameViewState.CurrentlyPlaying,
-    betOnHigherClicked: () -> Unit,
-    betOnLowerClicked: () -> Unit,
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        val uiCard = viewState.currentCard.toUI()
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            AsyncImage(
-                modifier = Modifier
-                    .weight(2f)
-                    .padding(8.dp),
-                model = uiCard.imageUrl, contentDescription = null,
-            )
-            AsyncImage(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
-                model = CARD_BACK_IMAGE_URL, contentDescription = null
-            )
-
-        }
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(onClick = betOnLowerClicked) {
-                Text("Bet lower")
-            }
-            Button(onClick = betOnHigherClicked) {
-                Text("Bet higher")
-            }
-        }
-    }
-}
-
-@Composable
-fun NewScreen(onNewGameClicked: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "BetDeck",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(8.dp)
-        )
-        Text(text = "Bet on the value of the next card!", modifier = Modifier.padding(8.dp))
-
-        Text(text = "Will it be higher or lover?!", modifier = Modifier.padding(8.dp))
-
-        Button(onClick = onNewGameClicked) {
-            Text(text = "Let's play!")
-        }
-    }
-}
-
-private fun CardModel.toUI() = Card(
-    cardValue = this.value.toString()
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-    cardSuit = this.suit.toString()
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-    imageUrl = CARD_IMAGE_BASE_URL + this.value.toUI() + this.suit.toUI() + CARD_IMAGE_EXTENSION
-)
-
-private fun Suit.toUI() = when (this) {
-    Suit.Spades -> "S"
-    Suit.Diamonds -> "D"
-    Suit.Hearts -> "H"
-    Suit.Clubs -> "C"
-}
-
-private fun CardValue.toUI() = when (this) {
-    CardValue.A -> "A"
-    CardValue.Two -> "2"
-    CardValue.Three -> "3"
-    CardValue.Four -> "4"
-    CardValue.Five -> "5"
-    CardValue.Six -> "6"
-    CardValue.Seven -> "7"
-    CardValue.Eight -> "8"
-    CardValue.Nine -> "9"
-    CardValue.Ten -> "0"
-    CardValue.Jack -> "J"
-    CardValue.Queen -> "Q"
-    CardValue.King -> "K"
-}
-
