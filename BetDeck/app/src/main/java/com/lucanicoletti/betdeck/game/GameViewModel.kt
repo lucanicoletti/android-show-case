@@ -1,11 +1,16 @@
 package com.lucanicoletti.betdeck.game
 
+import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.viewModelScope
 import com.lucanicoletti.betdeck.base.BaseViewModel
+import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_BASE_URL
+import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_EXTENSION
+import com.lucanicoletti.betdeck.game.data.Card
 import com.lucanicoletti.domain.model.CardModel
 import com.lucanicoletti.domain.usecase.GetAllCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel

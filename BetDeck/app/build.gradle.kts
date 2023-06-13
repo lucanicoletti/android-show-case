@@ -66,6 +66,7 @@ dependencies {
     api(libs.converter.gson)
     api(libs.logging.interceptor)
 
+    implementation(libs.coil.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
