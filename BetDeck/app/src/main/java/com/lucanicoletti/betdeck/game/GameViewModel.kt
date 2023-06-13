@@ -1,16 +1,11 @@
 package com.lucanicoletti.betdeck.game
 
-import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.viewModelScope
 import com.lucanicoletti.betdeck.base.BaseViewModel
-import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_BASE_URL
-import com.lucanicoletti.betdeck.game.data.CARD_IMAGE_EXTENSION
-import com.lucanicoletti.betdeck.game.data.Card
 import com.lucanicoletti.domain.model.CardModel
 import com.lucanicoletti.domain.usecase.GetAllCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,9 +17,6 @@ class GameViewModel @Inject constructor(
 
     override fun handleIntention(intention: GameIntention) {
         when (intention) {
-            GameIntention.BackClicked -> {
-
-            }
             GameIntention.StartNewGame -> fetchDeckAndStartGame()
             is GameIntention.Bet -> checkNextCard(intention.bet)
         }
@@ -48,6 +40,7 @@ class GameViewModel @Inject constructor(
                     }
                 }
             }
+
             else -> {
                 //nothing to do here, should never end up here
             }
@@ -57,7 +50,7 @@ class GameViewModel @Inject constructor(
     private fun onCorrectGuess(oldState: GameViewState.CurrentlyPlaying, nextCard: CardModel) {
         val remaining = oldState.remainingCards - nextCard
         updateState {
-            GameViewState.CurrentlyPlaying(nextCard, remaining)
+            GameViewState.CurrentlyPlaying(oldState.currentStreak + 1, nextCard, remaining)
         }
     }
 
@@ -74,7 +67,7 @@ class GameViewModel @Inject constructor(
             val currentCard = cards[0]
             val remainingCards = cards - currentCard
             updateState {
-                GameViewState.CurrentlyPlaying(currentCard, remainingCards)
+                GameViewState.CurrentlyPlaying(0, currentCard, remainingCards)
             }
         }
     }

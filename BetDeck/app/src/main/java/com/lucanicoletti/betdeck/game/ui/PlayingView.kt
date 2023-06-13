@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +36,10 @@ fun PlayingView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Text(
+            text = "Current streak: ${viewState.currentStreak}",
+            style = MaterialTheme.typography.headlineMedium
+        )
         CardsView(viewState = viewState)
         BetButtons(betOnLowerClicked = betOnLowerClicked, betOnHigherClicked = betOnHigherClicked)
     }

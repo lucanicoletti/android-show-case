@@ -42,11 +42,6 @@ import java.util.Locale
 @Composable
 fun GameScreen(viewModel: GameViewModel) {
     val viewState = viewModel.viewState.collectAsStateWithLifecycle().value
-
-    BackHandler {
-        viewModel.submitIntention(GameIntention.BackClicked)
-    }
-
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
